@@ -94,15 +94,113 @@ WebKit 和 Firefox 都进行了这项优化。在执行脚本时，其他线程�
 Firefox 在样式表加载和解析的过程中，会禁止所有脚本。而对于 WebKit 而言，仅当脚本尝试访问的样式属性可能受尚未加载的样式表影响时，它才会禁止该脚本。
 
 ## 呈现树构建
+在 DOM 树构建的同时，浏览器还会构建另一个树结构：呈现树。这是由可视化元素按照其显示顺序而组成的树，也是文档的可视化表示。它的作用是让您按照正确的顺序绘制内容。
+```TS
+// WebKits RenderObjec
+class RenderObject{
+  virtual void layout();
+  virtual void paint(PaintInfo);
+  virtual void rect repaintRect();
+  Node* node;  //the DOM node
+  RenderStyle* style;  // the computed style
+  RenderLayer* containgLayer; //the containing z-index layer
+}
+```
+```TS
+RenderObject* RenderObject::createObject(Node* node, RenderStyle* style)
+{
+    Document* doc = node->document();
+    RenderArena* arena = doc->renderArena();
+    ...
+    RenderObject* o = 0;
+
+    switch (style->display()) {
+        case NONE:
+            break;
+        case INLINE:
+            o = new (arena) RenderInline(node);
+            break;
+        case BLOCK:
+            o = new (arena) RenderBlock(node);
+            break;
+        case INLINE_BLOCK:
+            o = new (arena) RenderBlock(node);
+            break;
+        case LIST_ITEM:
+            o = new (arena) RenderListItem(node);
+            break;
+       ...
+    }
+
+    return o;
+}
+```
+
 ### 呈现树和 DOM 树的关系
+![呈现树](../Assets/how_browser_work/render_tree.png)
+
 ## 布局
+呈现器在创建完成并添加到呈现树时，并不包含位置和大小信息。计算这些值的过程称为布局或重排。
+
+### Dirty 位系统
+如果某个呈现器发生了更改，或者将自身及其子代标注为“dirty”，则需要进行布局。
+
+### 全局布局和增量布局
+全局布局是指触发了整个呈现树范围的布局，触发原因可能包括：
+1. 影响所有呈现器的全局样式更改，例如字体大小更改。
+2. 屏幕大小调整
+
+![增量布局](../Assets/how_brower_work/dirty_render.png)
+### 布局处理
+1. 父呈现器确定自己的宽度。
+2. 父呈现器依次处理子呈现器，并且：
+    1. 放置子呈现器（设置 x,y 坐标）。
+    2. 如果有必要，调用子呈现器的布局（如果子呈现器是 dirty 的，或者这是全局布局，或出于其他某些原因），这会计算子呈现器的高度。
+3. 父呈现器根据子呈现器的累加高度以及边距和补白的高度来设置自身高度，此值也可供父呈现器的父呈现器使用。
+4. 将其 dirty 位设置为 false。
+
+
 
 ## 绘制
+在绘制阶段，系统会遍历呈现树，并调用呈现器的“paint”方法，将呈现器的内容显示在屏幕上。绘制工作是使用用户界面基础组件完成的。
+
+### 全局绘制和增量绘制
+绘制也分为全局（绘制整个呈现树）和增量两种。在增量绘制中，部分呈现器发生了更改，但是不会影响整个树。更改后的呈现器将其在屏幕上对应的矩形区域设为无效，这导致 OS 将其视为一块“dirty 区域”，并生成“paint”事件。OS 会很巧妙地将多个区域合并成一个。在 Chrome 浏览器中，情况要更复杂一些，因为 Chrome 浏览器的呈现器不在主进程上。
+
+### 绘制顺序
+1. 背景颜色
+2. 背景图片
+3. 边框
+4. 子代
+5. 轮廓
 
 ## 动态变化
+在发生变化时，浏览器会尽可能做出最小的响应。因此，元素的颜色改变后，只会对该元素进行重绘。元素的位置改变后，只会对该元素及其子元素（可能还有同级元素）进行布局和重绘。添加 DOM 节点后，会对该节点进行布局和重绘。一些重大变化（例如增大“html”元素的字体）会导致缓存无效，使得整个呈现树都会进行重新布局和绘制。
 
 ## 呈现引擎的线程
+呈现引擎采用了单线程。几乎所有操作（除了网络操作）都是在单线程中进行的。在 Firefox 和 Safari 中，该线程就是浏览器的主线程。而在 Chrome 浏览器中，该线程是标签进程的主线程。
+网络操作可由多个并行线程执行。并行连接数是有限的（通常为 2 至 6 个，以 Firefox 3 为例是 6 个）。
+
+### 事件循环
+浏览器的主线程是事件循环。它是一个无限循环，永远处于接受处理状态，并等待事件（如布局和绘制事件）发生，并进行处理。这是 Firefox 中关于主事件循环的代码：
+```TS
+while (!mExiting)
+    NS_ProcessNextEvent(thread);
+```
 
 ## CSS2 可视化模型
 
-## 资源
+### 画布
+“画布”这一术语是指“用来呈现格式化结构的空间”，也就是供浏览器绘制内容的区域。画布的空间尺寸大小是无限的，但是浏览器会根据视口的尺寸选择一个初始宽度。
+
+### CSS 框模型
+针对文档树中的元素而生成，并根据可视化格式模型进行布局的矩形框。
+![css2框模型](../Assets/how_browser_work/css2_frame_module.jpg)
+
+### 定位方案
+
+1. 普通：根据对象在文档中的位置进行定位，也就是说对象在呈现树中的位置和它在 DOM 树中的位置相似，并根据其框类型和尺寸进行布局。
+2. 浮动：对象先按照普通流进行布局，然后尽可能地向左或向右移动。
+3. 绝对：对象在呈现树中的位置和它在 DOM 树中的位置不同。
+
+
