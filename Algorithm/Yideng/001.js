@@ -41,7 +41,7 @@ let target2 = 7;
 */
 const find = (array, target) => {
     console.time("find");
-    array.sort((a, b) => a[0] - b[0]);
+    // array.sort((a, b) => a[0] - b[0]);
     let i = array.length - 1; // y坐标
     let j = 0; // x坐标
     const result = compare(array, target, i, j);
