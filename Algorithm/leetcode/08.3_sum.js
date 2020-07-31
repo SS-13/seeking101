@@ -29,7 +29,7 @@ var threeSum1 = function (nums) {
         // 去问剩下的每个人
         if (nums[i] + nums[j] + nums[k] === 0) {
           // 我们是不是可以一起组队
-          res.push ([nums[i], nums[j], nums[k]]);
+          res.push([nums[i], nums[j], nums[k]]);
         }
       }
     }
@@ -46,7 +46,7 @@ var threeSum2 = function (nums) {
       // 依次拉上其他每个人
       if (hash[nums[j]] !== undefined) {
         // 已经有合适自己的两人组
-        res.push ([nums[j]].concat (hash[nums[j]]));
+        res.push([nums[j]].concat(hash[nums[j]]));
         hash[nums[j]] = undefined;
       } else {
         // 没有合适自己的两人组
@@ -60,7 +60,7 @@ var threeSum2 = function (nums) {
 
 var threeSum3 = function (nums) {
   let res = [];
-  nums.sort ((a, b) => a - b); // 先排个队，最左边是最弱（小）的，最右边是最强(大)的
+  nums.sort((a, b) => a - b); // 先排个队，最左边是最弱（小）的，最右边是最强(大)的
   for (let i = 1; i < nums.length - 1; i++) {
     // C位人选
     let first = 0;
@@ -69,7 +69,7 @@ var threeSum3 = function (nums) {
       let result = nums[i] + nums[first] + nums[last];
       if (result === 0) {
         // 如果可以组队
-        res.push ([nums[i], nums[first], nums[last]]);
+        res.push([nums[i], nums[first], nums[last]]);
       }
       if (result <= 0 && first < i) {
         // 实力太弱，把菜鸟那边右移一位
@@ -90,7 +90,7 @@ var threeSum3 = function (nums) {
 var threeSum4 = function (nums) {
   let res = [];
   let length = nums.length;
-  nums.sort ((a, b) => a - b); // 先排个队，最左边是最弱（小）的，最右边是最强(大)的
+  nums.sort((a, b) => a - b); // 先排个队，最左边是最弱（小）的，最右边是最强(大)的
   if (nums[0] <= 0 && nums[length - 1] >= 0) {
     // 优化1: 整个数组同符号，则无解
     for (let i = 0; i < length - 2; ) {
@@ -102,20 +102,17 @@ var threeSum4 = function (nums) {
         let result = nums[i] + nums[first] + nums[last];
         if (result === 0) {
           // 如果可以组队
-          res.push ([nums[i], nums[first], nums[last]]);
+          res.push([nums[i], nums[first], nums[last]]);
         }
         if (result <= 0) {
           // 实力太弱，把菜鸟那边右移一位
-          while (first < last && nums[first] === nums[++first]) {
-          } // 如果相等就跳过
+          while (first < last && nums[first] === nums[++first]) {} // 如果相等就跳过
         } else {
           // 实力太强，把大神那边右移一位
-          while (first < last && nums[last] === nums[--last]) {
-          }
+          while (first < last && nums[last] === nums[--last]) {}
         }
       } while (first < last);
-      while (nums[i] === nums[++i]) {
-      }
+      while (nums[i] === nums[++i]) {}
     }
   }
   return res;
@@ -124,13 +121,13 @@ var threeSum4 = function (nums) {
 /**
  * 执行用时 :200 ms, 在所有 JavaScript 提交中击败了97.38%的用户
  * 内存消耗 :46.7 MB, 在所有 JavaScript 提交中击败了66.32%的用户
- * @param {*} nums 
+ * @param {*} nums
  */
 var threeSum = function (nums) {
   let ans = [];
   const len = nums.length;
   if (nums == null || len < 3) return ans;
-  nums.sort ((a, b) => a - b); // 排序
+  nums.sort((a, b) => a - b); // 排序
   for (let i = 0; i < len; i++) {
     if (nums[i] > 0) break; // 如果当前数字大于0，则三数之和一定大于0，所以结束循环
     if (i > 0 && nums[i] == nums[i - 1]) continue; // 去重
@@ -139,11 +136,9 @@ var threeSum = function (nums) {
     while (L < R) {
       const sum = nums[i] + nums[L] + nums[R];
       if (sum == 0) {
-        ans.push ([nums[i], nums[L], nums[R]]);
-        while (L < R && nums[L] == nums[L + 1])
-          L++; // 去重
-        while (L < R && nums[R] == nums[R - 1])
-          R--; // 去重
+        ans.push([nums[i], nums[L], nums[R]]);
+        while (L < R && nums[L] == nums[L + 1]) L++; // 去重
+        while (L < R && nums[R] == nums[R - 1]) R--; // 去重
         L++;
         R--;
       } else if (sum < 0) L++;
@@ -153,7 +148,7 @@ var threeSum = function (nums) {
   return ans;
 };
 
-threeSum ([1, 2, -1, -2, 0, -1, 1]);
+threeSum([1, 2, -1, -2, 0, -1, 1]);
 /*
 [1, -1, 0]
 [1, -2 , 1]
