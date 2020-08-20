@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>外边距塌陷</title>
+        <style>
+            body {
+                padding: 0;
+                margin: 0;
+            }
+            .box {
+                border: 1px solid gray;
+            }
+
+            .blue,
+            .red {
+                height: 50px;
+                margin: 10px 0;
+                opacity: 0.6;
+            }
+
+            .blue {
+                background: blue;
+            }
+
+            .red {
+                background: red;
+            }
+
+            .bfc {
+                display: flow-root;
+            }
+        </style>
+    </head>
+    <body>
+        <h3>外边距塌陷</h3>
+
+        <pre>
+            外边距塌陷: 
+                当两个垂直外边距相遇时，它们将形成一个外边距。
+                合并后的外边距的高度等于两个发生合并的外边距的高度中的较大者。而左右外边距不合并。
+        </pre>
+
+        <div class="box">
+            <div class="blue"></div>
+            <div class="red"></div>
+        </div>
+
+
+        <pre>
+            创建新的 BFC 避免两个相邻 div 之间的 外边距合并 问题
+            （两个相邻 div 处于不同BFC）
+        </pre>
+
+        <div class="box">
+            <div class="blue"></div>
+            <div class="out bfc">
+                <div class="red"></div>
+            </div>
+        </div>
+    </body>
+</html>

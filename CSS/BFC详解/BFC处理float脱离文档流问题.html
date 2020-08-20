@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>让浮动内容和周围的内容等高 - BFC</title>
+        <style>
+            body {
+                padding: 0;
+                margin: 0;
+            }
+            h1 {
+                text-align: center;
+            }
+            hr {
+                /* margin-top: 150px; */
+            }
+            .box {
+                background-color: rgb(224, 206, 247);
+                border: 5px solid rebeccapurple;
+            }
+            body > div:nth-of-type(1) {
+                margin-bottom: 150px;
+            }
+            .float {
+                float: left;
+                width: 200px;
+                height: 150px;
+                background-color: white;
+                border: 1px solid black;
+                padding: 10px;
+            }
+
+            .bfc-overflow {
+                overflow: auto;
+            }
+
+            .bfc-flow-root {
+                display: flow-root;
+            }
+        </style>
+    </head>
+    <body>
+        <h3>让浮动内容和周围的内容等高</h3>
+        <pre>
+            为了更好的理解BFC，我们先看看下面这些。
+            在下面的例子中，我们让 div 元素浮动，并给它一个边框效果。
+            div 里的内容现在已经在浮动元素周围浮动起来了。
+            由于浮动的元素比它旁边的元素高，所以 div 的边框穿出了浮动。
+            正如我们在这篇文章中 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flow_Layout/In_Flow_and_Out_of_Flow"> guide to in-flow and out of flow elements</a> 解释的，浮动脱离了文档流，
+            所以 div 的 background 和 border 仅仅包含了内容，不包含浮动。
+        </pre>
+        <div class="box">
+            <div class="float">I am a floated box!</div>
+            <p>I am content inside the container.</p>
+        </div>
+        <hr />
+
+        <h3>使用overflow: auto</h3>
+        <pre>
+            创建一个会包含这个浮动的 BFC，
+            通常的做法是设置父元素 overflow: auto 或者设置其他的 <b>非默认</b> 的 overflow: visible 的值。
+        </pre>
+        <div class="box bfc-overflow">
+            <div class="float">I am a floated box inside BFC box!</div>
+            <p>I am content inside the container.</p>
+        </div>
+
+        <pre>
+            使用 overflow 来创建一个新的 BFC，是因为 overflow 属性告诉浏览器你想要怎样处理溢出的内容。
+            当你使用这个属性只是为了创建 BFC 的时候，你可能会发现一些不想要的问题，
+            比如滚动条或者一些剪切的阴影，需要注意。
+            另外，对于后续的开发，可能不是很清楚当时为什么使用 overflow。所以你最好添加一些注释来解释为什么这样做。
+        </pre>
+        <hr />
+
+        <h3>使用display: flow-root</h3>
+        <pre>
+            一个新的 display 属性的值，它可以创建无副作用的 BFC。在父级块中使用 display: flow-root 可以创建新的 BFC。
+        </pre>
+        <div class="box bfc-flow-root">
+            <div class="float">I am a floated box inside BFC box!</div>
+            <p>I am content inside the container.</p>
+        </div>
+        <pre>
+            给 div display: flow-root 属性后，div 中的所有内容都会参与 BFC，浮动的内容不会从底部溢出。
+            关于值 flow-root 的这个名字，当你明白你实际上是在创建一个行为类似于根元素（浏览器中的 html 元素）的东西时，
+            就能发现这个名字的意义了——即创建一个上下文，里面将进行 flow layout。
+        </pre>
+    </body>
+</html>
