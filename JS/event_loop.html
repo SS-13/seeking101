@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <!-- <script src="./event_loop.js"></script>
+        <script src="./event_loop2.js"></script> -->
+
+        <script>
+            function func1() {
+                console.log("func1");
+                setTimeout(() => {
+                    console.log("func1 setTimeout");
+                }, 0);
+            }
+            function func2() {
+                console.log("func2");
+                new Promise((res) => {
+                    res("func2 promise");
+                }).then((data) => {
+                    console.log(data);
+                });
+            }
+            function func3() {
+                console.log("func3");
+            }
+            function func4() {
+                console.log("func4");
+            }
+            function func5() {
+                console.log("func5");
+                setTimeout(() => {
+                    console.log("func5 setTimeout");
+                }, 0);
+            }
+            function func6() {
+                console.log("func6");
+                new Promise((res) => {
+                    res("func6 promise");
+                }).then((data) => {
+                    console.log(data);
+                });
+            }
+
+            func1();
+            func2();
+            func3();
+            func4();
+            func5();
+            func6();
+        </script>
+        <script>
+            function func7() {
+                console.log("func7");
+                setTimeout(() => {
+                    console.log("func7 setTimeout");
+                }, 0);
+            }
+            function func8() {
+                console.log("func8");
+                new Promise((res) => {
+                    res("func8 promise");
+                }).then((data) => {
+                    console.log(data);
+                });
+            }
+            function func9() {
+                console.log("func9");
+            }
+            function func10() {
+                console.log("func10");
+            }
+            function func11() {
+                console.log("func11");
+                setTimeout(() => {
+                    console.log("func11 setTimeout");
+                }, 0);
+            }
+            function func12() {
+                console.log("func12");
+                new Promise((res) => {
+                    res("func12 promise");
+                }).then((data) => {
+                    console.log(data);
+                });
+            }
+
+            func7();
+            func8();
+            func9();
+            func10();
+            func11();
+            func12();
+        </script>
+    </body>
+</html>
